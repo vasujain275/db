@@ -14,7 +14,7 @@ docker exec -it PostgresCont psql -U postgres -W dbName
 2. Login with the following credentials:
 
    - Email: admin@example.com
-   - Password: adminpassword
+   - Password: admin
 
 3. To add a new server in pgAdmin:
    - Click "Add New Server"
