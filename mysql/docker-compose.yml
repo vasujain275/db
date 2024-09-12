@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  mysql_db:
+    image: mysql:latest
+    container_name: MySQLCont
+    # restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=mydb
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysql123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_db:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    # restart: always
+    environment:
+      - PMA_HOST=mysql_db
+      - PMA_USER=root
+      - PMA_PASSWORD=rootpassword
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql_db
+volumes:
+  mysql_db:
+    driver: local
