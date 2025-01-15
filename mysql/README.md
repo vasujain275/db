@@ -38,7 +38,7 @@ When prompted, enter the root password: `rootpassword`
 
 ### Adminer
 
-- **URL**: http://localhost:8080
+- **URL**: http://localhost:8006
 - **Server**: mysql_db
 - **Username**: root
 - **Password**: rootpassword
