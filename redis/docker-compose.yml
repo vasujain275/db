@@ -1,6 +1,4 @@
-# docker compose file for redis and redis-insight with port mapping
-
-version: '3.7'
+version: "3.7"
 
 services:
   redis:
@@ -11,15 +9,22 @@ services:
       - 6379:6379
     volumes:
       - redis-volume-data:/data
-
+    command: ["redis-server", "--requirepass", "redis123"]
 
   redisinsight:
     image: redislabs/redisinsight:latest
     container_name: redisinsight
+    restart: always
     ports:
       - 8001:8001
     volumes:
       - redisinsight-data:/db
+    environment:
+      - REDISINSIGHT_REDIS_HOST=redis
+      - REDISINSIGHT_REDIS_PORT=6379
+      - REDISINSIGHT_REDIS_PASSWORD=your_redis_password
+    depends_on:
+      - redis
 
 volumes:
   redis-volume-data:
