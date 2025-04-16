@@ -3,13 +3,7 @@
 ### When `docker-compose.yml` is in the root folder
 
 ```bash
-docker-compose up
-```
-
-### When `docker-compose.yml` is in the nested folders
-
-```bash
-docker-compose -f ./mongodb/docker-compose.yml up
+docker compose up
 ```
 
 # Connection string
@@ -29,10 +23,9 @@ mongodb://<username>:<password>@localhost:27017
 **Run the following command to enable mongo shell:**
 
 ```
-docker-compose -f mongodb/docker-compose.yml run mongo mongosh --host mongo
+docker compose run mongo mongosh --host mongo
 ```
 
-- `-f mongodb/docker-compose.yml` points to the file which we want to run docker compose on. If we have `docker-compose.yml` in root folder we don't need to pass this flag
 - `run` will run the command that we enter
 - `mongo` is the container name that we have entered in docker compose file. This is the container in which we want to `run` the command
 - `mongosh --host mongo` is the command that we want to `run`, to enter into the mongo shell
@@ -75,7 +68,7 @@ test> quit
 # Access mongo shell with permissions
 
 ```bash
-docker-compose -f mongodb/docker-compose.yml run mongo mongosh -u root -p example --host mongo
+docker compose run mongo mongosh -u root -p example --host mongo
 ```
 
 - `-u root` this is the username that we have provided in the compose file with `MONGO_INITDB_ROOT_USERNAME: root` env var
