@@ -1,31 +1,24 @@
-version: "3.7"
-
 services:
-  redis:
-    image: redis:latest
-    container_name: redis
+  valkey:
+    image: valkey/valkey:latest
+    container_name: valkey
     restart: always
     ports:
       - 6379:6379
+    command: ["valkey-server", "--requirepass", "valkey123"]
     volumes:
-      - redis-volume-data:/data
-    command: ["redis-server", "--requirepass", "redis123"]
+      - valkey-data:/data
 
-  redisinsight:
-    image: redislabs/redisinsight:latest
-    container_name: redisinsight
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
     restart: always
-    ports:
-      - 8001:8001
-    volumes:
-      - redisinsight-data:/db
     environment:
-      - REDISINSIGHT_REDIS_HOST=redis
-      - REDISINSIGHT_REDIS_PORT=6379
-      - REDISINSIGHT_REDIS_PASSWORD=your_redis_password
+      - REDIS_HOSTS=local:valkey:6379:0:valkey123
+    ports:
+      - 8081:8081
     depends_on:
-      - redis
+      - valkey
 
 volumes:
-  redis-volume-data:
-  redisinsight-data:
+  valkey-data:
