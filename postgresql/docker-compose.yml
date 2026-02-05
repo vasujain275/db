@@ -1,28 +1,40 @@
-version: "3.8"
 services:
   postgres_db:
-    image: postgres:latest
+    image: postgres:18-alpine
     container_name: PostgresCont
-    # restart: always
+    restart: unless-stopped
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres123
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
       - postgres_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
-    image: dpage/pgadmin4
-    # restart: always
+    image: dpage/pgadmin4:latest
+    container_name: PgAdminCont
+    restart: unless-stopped
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@example.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
       - "8432:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
-      - postgres_db
+      postgres_db:
+        condition: service_healthy
 
 volumes:
   postgres_db:
+    driver: local
+  pgadmin_data:
     driver: local
