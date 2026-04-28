@@ -34,11 +34,16 @@ docker compose down -v
 
 ## pgvector Support
 
-The compose file uses the `pgvector/pgvector:pg18` image and runs an init script at startup.
+The compose file uses the `pgvector/pgvector:pg18` image and mounts data at `/var/lib/postgresql`, which is the layout PostgreSQL 18 expects.
 
-If you already have the `postgres_db` volume, the init script will not run again. In that case, either:
-- run `CREATE EXTENSION vector;` manually in your database, or
-- recreate the volume with `docker compose down -v`
+If you already have the `postgres_db` volume from the old `/var/lib/postgresql/data` mount, recreate it with:
+
+```bash
+docker compose down -v
+docker compose up -d
+```
+
+The init script runs at startup and creates the `vector` extension on first boot. If the database already exists, you can also run `CREATE EXTENSION vector;` manually.
 
 ## Accessing PostgreSQL
 
