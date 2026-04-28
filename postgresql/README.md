@@ -1,6 +1,6 @@
-# PostgreSQL 18 Database Setup Using Docker
+# PostgreSQL 18 + pgvector Setup Using Docker
 
-A Docker Compose setup for PostgreSQL 18 with pgAdmin 4 for easy database management.
+A Docker Compose setup for PostgreSQL 18 with pgvector and pgAdmin 4 for easy database management.
 
 ## Prerequisites
 
@@ -15,8 +15,10 @@ docker compose up -d
 ```
 
 This will start:
-- PostgreSQL 18 (Alpine) on port 5432
+- PostgreSQL 18 with pgvector on port 5432
 - pgAdmin 4 on port 8432
+
+The `vector` extension is created automatically the first time the database volume is initialized.
 
 ### Stop the services
 
@@ -29,6 +31,14 @@ docker compose down
 ```bash
 docker compose down -v
 ```
+
+## pgvector Support
+
+The compose file uses the `pgvector/pgvector:pg18` image and runs an init script at startup.
+
+If you already have the `postgres_db` volume, the init script will not run again. In that case, either:
+- run `CREATE EXTENSION vector;` manually in your database, or
+- recreate the volume with `docker compose down -v`
 
 ## Accessing PostgreSQL
 
@@ -141,6 +151,7 @@ docker compose restart
 
 ## Notes
 
-- The PostgreSQL 18 Alpine image is used for a smaller footprint
+- The `pgvector/pgvector:pg18` image includes pgvector support
+- The `initdb/init-vector.sql` script creates the `vector` extension on first boot
 - Services are set to restart unless manually stopped
 - pgAdmin is configured in desktop mode for easier local development
