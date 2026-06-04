@@ -15,3 +15,4 @@ This repository contains separate folders for common databases and supporting se
 ## Common Services - 
 
 - [RabbitMQ](./rabbitmq)
+- [MinIO](./minio)
