@@ -18,7 +18,7 @@ This stack provides:
 | Service | Description | Port | URL |
 |----------|--------------|------|-----|
 | **Valkey** | In-memory data store (Redis-compatible) | `6379` | `redis://default:valkey123@localhost:6379/0` |
-| **Redis Commander** | Web-based Redis GUI | `8081` | [http://localhost:8081](http://localhost:8081) |
+| **Redis Commander** | Web-based Redis GUI | `8091` | [http://localhost:8091](http://localhost:8091) |
 
 ---
 
@@ -38,7 +38,7 @@ This stack provides:
    - `redis-commander`
 
 3. **Access Redis Commander**
-   Open [http://localhost:8081](http://localhost:8081) in your browser.  
+   Open [http://localhost:8091](http://localhost:8091) in your browser.  
    You’ll see the connected Valkey instance.
 
 ---

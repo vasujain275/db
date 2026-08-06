@@ -16,7 +16,7 @@ services:
     environment:
       - REDIS_HOSTS=local:valkey:6379:0:valkey123
     ports:
-      - 8081:8081
+      - 8091:8091
     depends_on:
       - valkey
 
