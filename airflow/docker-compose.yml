@@ -1,0 +1,114 @@
+services:
+  airflow-db:
+    image: postgres:16
+    container_name: airflow-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    ports:
+      - "5433:5432"
+    volumes:
+      - airflow_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow-webserver:
+    image: apache/airflow:2.10.3
+    container_name: airflow-webserver
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: airflow-secret-key
+      PYTHONPATH: /opt/airflow/project:${PYTHONPATH:-}
+      # Override .env URIs so container can reach host services
+      MONGO_URI: "mongodb://root:example@host.docker.internal:27017/"
+      RABBITMQ_URI: "amqp://rabbituser:rabbitpass123@host.docker.internal/"
+      MINIO_ENDPOINT: "host.docker.internal:9000"
+      WEAVIATE_HOST: "host.docker.internal"
+      OLLAMA_HOST: "http://host.docker.internal:11434"
+    entrypoint: ["/opt/airflow/scripts/airflow-entrypoint.sh"]
+    command: webserver
+    ports:
+      - "8088:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      # Mount the project and scripts
+      - /home/vasu/work/digitem/practice-ground:/opt/airflow/project
+      - /home/vasu/work/digitem/practice-ground/scripts:/opt/airflow/scripts
+      # Persist the venv across restarts
+      - airflow_venv:/opt/airflow/venv
+
+  airflow-scheduler:
+    image: apache/airflow:2.10.3
+    container_name: airflow-scheduler
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: airflow-secret-key
+      PYTHONPATH: /opt/airflow/project:${PYTHONPATH:-}
+      # Override .env URIs so container can reach host services
+      MONGO_URI: "mongodb://root:example@host.docker.internal:27017/"
+      RABBITMQ_URI: "amqp://rabbituser:rabbitpass123@host.docker.internal/"
+      MINIO_ENDPOINT: "host.docker.internal:9000"
+      WEAVIATE_HOST: "host.docker.internal"
+      OLLAMA_HOST: "http://host.docker.internal:11434"
+    entrypoint: ["/opt/airflow/scripts/airflow-entrypoint.sh"]
+    command: scheduler
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - /home/vasu/work/digitem/practice-ground:/opt/airflow/project
+      - /home/vasu/work/digitem/practice-ground/scripts:/opt/airflow/scripts
+      - airflow_venv:/opt/airflow/venv
+
+  airflow-init:
+    image: apache/airflow:2.10.3
+    container_name: airflow-init
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: airflow-secret-key
+    entrypoint: /bin/bash
+    command: -c "airflow db migrate && airflow users create --username admin --password admin --firstname Airflow --lastname Admin --role Admin --email admin@example.com"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+
+volumes:
+  airflow_db:
+    driver: local
+  airflow_venv:
+    driver: local

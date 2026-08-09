@@ -11,8 +11,11 @@ This repository contains separate folders for common databases and supporting se
 - [Redis](./redis)
 - [Qdrant](./qdrant)
 - [Weaviate](./weaviate)
+- [RustFS](./rustfs)
 
 ## Common Services - 
 
 - [RabbitMQ](./rabbitmq)
 - [MinIO](./minio)
+- [RustFS](./rustfs)
+- [Apache Airflow](./airflow)
