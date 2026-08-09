@@ -1,6 +1,6 @@
 services:
   rustfs:
-    image: rustfs/rustfs:latest
+    image: rustfs/rustfs:1.0.0-rc.1 # pinned: 1.0.0-rc.1 is the version spike-verified against the project
     container_name: rustfs
     restart: unless-stopped
     ports:
@@ -16,6 +16,12 @@ services:
       RUSTFS_REGION: auto
     volumes:
       - rustfs_data:/data
+    healthcheck:
+      test: ["CMD", "sh", "-ec", "curl -fsS http://127.0.0.1:9000/health && curl -fsS http://127.0.0.1:9001/rustfs/console/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 volumes:
   rustfs_data:
