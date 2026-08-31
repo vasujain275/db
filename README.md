@@ -19,3 +19,4 @@ This repository contains separate folders for common databases and supporting se
 - [MinIO](./minio)
 - [RustFS](./rustfs)
 - [Apache Airflow](./airflow)
+- [Apache Hadoop](./hadoop)

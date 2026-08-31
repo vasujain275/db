@@ -1,0 +1,57 @@
+services:
+  namenode:
+    image: apache/hadoop:3
+    container_name: namenode
+    hostname: namenode
+    restart: unless-stopped
+    command: ["hdfs", "namenode"]
+    ports:
+      - "9870:9870" # NameNode Web UI
+    env_file: ./hadoop.env
+    environment:
+      # formatted once into the persistent volume; prevents clusterID mismatch on restarts (HDFS-17307)
+      ENSURE_NAMENODE_DIR: /hadoop/dfs/name
+    volumes:
+      - namenode_data:/hadoop/dfs/name
+
+  datanode:
+    image: apache/hadoop:3
+    container_name: datanode
+    restart: unless-stopped
+    command: ["hdfs", "datanode"]
+    env_file: ./hadoop.env
+    volumes:
+      - datanode_data:/hadoop/dfs/data
+
+  resourcemanager:
+    image: apache/hadoop:3
+    container_name: resourcemanager
+    hostname: resourcemanager
+    restart: unless-stopped
+    command: ["yarn", "resourcemanager"]
+    ports:
+      - "8088:8088" # ResourceManager Web UI
+    env_file: ./hadoop.env
+
+  nodemanager:
+    image: apache/hadoop:3
+    container_name: nodemanager
+    restart: unless-stopped
+    command: ["yarn", "nodemanager"]
+    env_file: ./hadoop.env
+
+  historyserver:
+    image: apache/hadoop:3
+    container_name: historyserver
+    hostname: historyserver
+    restart: unless-stopped
+    command: ["mapred", "historyserver"]
+    ports:
+      - "19888:19888" # JobHistory Web UI
+    env_file: ./hadoop.env
+
+volumes:
+  namenode_data:
+    driver: local
+  datanode_data:
+    driver: local
